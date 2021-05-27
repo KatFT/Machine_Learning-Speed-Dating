@@ -6,6 +6,10 @@ from sklearn.model_selection import train_test_split
 from sklearn import metrics
 from sklearn.tree import DecisionTreeRegressor 
 from sklearn.tree import DecisionTreeClassifier # Import Decision Tree Classifier
+from sklearn.metrics import mean_absolute_error as mae
+from sklearn.metrics import mean_squared_error as mse
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
 
 # load dataset
 pima = pd.read_csv("speedDating_trab.csv")
@@ -43,8 +47,9 @@ pima['age_o'].fillna(value=gf,inplace=True)
 gf= pima['age'].mode()[0]
 pima['age'].fillna(value=gf,inplace=True)
 
-gf= pima['id'].mode()[0]
-pima['id'].fillna(value=gf,inplace=True)
+#gf= pima['id'].mode()[0]
+#pima['id'].fillna(value=gf,inplace=True)
+pima.dropna(subset=['id'],inplace=True )
 
 
 #convertemos de float para int
@@ -70,6 +75,14 @@ regressor.fit(dados_treino, resultados_treino)
 predict = regressor.predict(dados_teste)
 # Model Accuracy, how often is the classifier correct?
 #print("Accuracy:",metrics.accuracy_score(resultados_teste, predict))#ele queixa se aqui qnd meto max depth
+
+print("Mean Absolute Error:",mae(resultados_teste,regressor.predict(dados_teste)))
+
+print("Mean Squared Error:",mse(resultados_teste,regressor.predict(dados_teste)))
+
+#confusion_matrix(resultados_teste, regressor.predict( dados_teste))
+
+#print(classification_report(resultados_teste, regressor.predict(dados_teste)))
 
 
 #desenhar o grafo da arvore de decisao

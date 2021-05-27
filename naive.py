@@ -7,6 +7,10 @@ from sklearn import metrics
 from sklearn.tree import DecisionTreeClassifier # Import Decision Tree Classifier
 #Import Gaussian Naive Bayes model
 from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import mean_absolute_error as mae
+from sklearn.metrics import mean_squared_error as mse
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
 
 # load dataset
 pima = pd.read_csv("speedDating_trab.csv")
@@ -44,8 +48,9 @@ pima['age_o'].fillna(value=gf,inplace=True)
 gf= pima['age'].mode()[0]
 pima['age'].fillna(value=gf,inplace=True)
 
-gf= pima['id'].mode()[0]
-pima['id'].fillna(value=gf,inplace=True)
+#gf= pima['id'].mode()[0]
+#pima['id'].fillna(value=gf,inplace=True)
+pima.dropna(subset=['id'],inplace=True )
 
 #convertemos de float para int
 pima[['prob','like','met','length','go_out','date','goal','age_o','age','id']]=  pima[['prob','like','met','length','go_out','date','goal','age_o','age','id']].astype(int)
@@ -71,4 +76,12 @@ gnb.fit(dados_treino,resultados_treino)
 #Predict the response for test dataset
 predicted = gnb.predict(dados_teste)
 print("Accuracy:",metrics.accuracy_score(resultados_teste, predicted))
+
+print("Mean Absolute Error:",mae(resultados_teste,gnb.predict(dados_teste)))
+
+print("Mean Squared Error:",mse(resultados_teste,gnb.predict(dados_teste)))
+
+print(confusion_matrix(resultados_teste, gnb.predict( dados_teste)))
+
+print(classification_report(resultados_teste, gnb.predict(dados_teste)))
 
