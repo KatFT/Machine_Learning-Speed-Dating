@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
-import sklearn 
-
+import sklearn
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
 from sklearn.tree import DecisionTreeClassifier # Import Decision Tree Classifier
@@ -9,7 +8,10 @@ from sklearn.metrics import mean_absolute_error as mae
 from sklearn.metrics import mean_squared_error as mse
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
-
+from matplotlib import pyplot as plt
+from sklearn.model_selection import learning_curve
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import KFold
 # load dataset
 pima = pd.read_csv("speedDating_trab.csv")
 
@@ -79,13 +81,20 @@ predicted_test = clf.predict(dados_teste)
 # Model Accuracy, how often is the classifier correct?
 print("Accuracy:",metrics.accuracy_score(resultados_teste, predicted_test))
 
-print("Mean Absolute Error:",mae(resultados_teste,clf.predict(dados_teste)))
+#print("Mean Absolute Error:",mae(resultados_teste,clf.predict(dados_teste)))
 
-print("Mean Squared Error:",mse(resultados_teste,clf.predict(dados_teste)))
+#print("Mean Squared Error:",mse(resultados_teste,clf.predict(dados_teste)))
 
 print(confusion_matrix(resultados_teste, clf.predict( dados_teste)))
 
 print(classification_report(resultados_teste, clf.predict(dados_teste)))
+
+kf = KFold(n_splits=7,shuffle=False)
+kf.split(dados)
+
+scores=cross_val_score(DecisionTreeClassifier(), dados, resultados, cv=7, scoring='accuracy')
+print("Cross Validation:", scores)
+print("The mean value for K-fold cross validation test that best explains our model is {}".format(scores.mean()),"\n")
 
 #desenhar o grafo da arvore de decisao
 from sklearn.tree import export_graphviz

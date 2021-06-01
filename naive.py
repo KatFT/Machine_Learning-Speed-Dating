@@ -1,16 +1,19 @@
+from math import gamma
 import pandas as pd
 import numpy as np
-import sklearn 
 
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
-from sklearn.tree import DecisionTreeClassifier # Import Decision Tree Classifier
-#Import Gaussian Naive Bayes model
+
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import mean_absolute_error as mae
 from sklearn.metrics import mean_squared_error as mse
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
+from matplotlib import pyplot as plt
+from sklearn.model_selection import learning_curve
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import KFold
 
 # load dataset
 pima = pd.read_csv("speedDating_trab.csv")
@@ -75,13 +78,43 @@ gnb.fit(dados_treino,resultados_treino)
 
 #Predict the response for test dataset
 predicted = gnb.predict(dados_teste)
+
+
 print("Accuracy:",metrics.accuracy_score(resultados_teste, predicted))
 
-print("Mean Absolute Error:",mae(resultados_teste,gnb.predict(dados_teste)))
+#print("Mean Absolute Error:",mae(resultados_teste,gnb.predict(dados_teste)))
 
-print("Mean Squared Error:",mse(resultados_teste,gnb.predict(dados_teste)))
+#print("Mean Squared Error:",mse(resultados_teste,gnb.predict(dados_teste),squared=False))
 
 print(confusion_matrix(resultados_teste, gnb.predict( dados_teste)))
 
 print(classification_report(resultados_teste, gnb.predict(dados_teste)))
+
+kf = KFold(n_splits=7,shuffle=False)
+kf.split(dados)
+
+scores=cross_val_score(GaussianNB(), dados, resultados, cv=7, scoring='accuracy')
+print("Cross Validation:", scores)
+print("The mean value for K-fold cross validation test that best explains our model is {}".format(scores.mean()),"\n")
+
+sizes, training_scores, testing_scores = learning_curve(GaussianNB(), dados, resultados, cv=10, scoring='accuracy', train_sizes=np.linspace(0.01, 1.0, 50))
+  
+# Mean and Standard Deviation of training scores
+mean_training = np.mean(training_scores, axis=1)
+Standard_Deviation_training = np.std(training_scores, axis=1)
+  
+# Mean and Standard Deviation of testing scores
+mean_testing = np.mean(testing_scores, axis=1)
+Standard_Deviation_testing = np.std(testing_scores, axis=1)
+  
+# dotted blue line is for training scores and green line is for cross-validation score
+plt.plot(sizes, mean_training, '--', color="b",  label="Training score")
+plt.plot(sizes, mean_testing, color="g", label="Cross-validation score")
+  
+# Drawing plot
+plt.title("LEARNING CURVE FOR GAUSSIAN")
+plt.xlabel("Training Set Size"), plt.ylabel("Accuracy Score"), plt.legend(loc="best")
+plt.tight_layout()
+plt.show()
+
 
